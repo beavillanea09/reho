@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReHo Gruppe: Geschäftsstruktur Infografik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px; /* Slightly increased for better mobile display */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Slightly increased height for better mobile fit */
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px; /* Increased height for desktop */
+                max-width: 600px; /* Wider for desktop */
+            }
+        }
+        .funnel-step {
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added box-shadow transition */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Added default shadow */
+        }
+        .funnel-step:hover {
+            transform: scale(1.03) translateY(-3px); /* Combined transform */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Enhanced shadow on hover */
+        }
+        .flow-node {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 280px;
+            min-width: 200px; 
+            flex-shrink: 0;
+            margin: 8px;
+            transition: all 0.3s ease;
+        }
+        .flow-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .small-flow-node {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            min-width: 120px;
+            flex-shrink: 0;
+            margin: 6px;
+            transition: all 0.3s ease;
+        }
+        .small-flow-node:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Custom arrow styles for flow diagrams */
+        .arrow-horizontal {
+            position: relative;
+            height: 2px;
+            background-color: #58508d;
+            min-width: 40px;
+            margin: 0 10px; /* Increased margin for better spacing */
+            align-self: center;
+        }
+        .arrow-horizontal::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #58508d;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .arrow-vertical {
+            position: relative;
+            width: 2px;
+            background-color: #58508d;
+            min-height: 30px;
+            margin: 10px 0; /* Increased margin for better spacing */
+        }
+        .arrow-vertical::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #58508d;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+
+        /* Specific styles for connecting lines in synergy flow */
+        .synergy-flow-connector {
+            width: 2px;
+            background-color: #bc5090; /* Synergy color */
+            height: 40px; /* Standard height for vertical connection */
+            position: relative;
+            margin: 1rem 0;
+        }
+        .synergy-flow-connector::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #bc5090;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        
+        .synergy-horizontal-connector {
+            height: 2px;
+            background-color: #bc5090;
+            flex-grow: 1;
+            min-width: 50px;
+            position: relative;
+            align-self: center;
+        }
+        .synergy-horizontal-connector.left-arrow::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-right: 8px solid #bc5090;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .synergy-horizontal-connector.right-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #bc5090;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        /* Specific styles for touchpoint cards */
+        .touchpoint-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            text-align: left; /* Changed to left align for list */
+            transition: all 0.3s ease;
+            max-width: 320px; /* Adjusted for better content fit */
+            min-width: 280px;
+        }
+        .touchpoint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .pillar-card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pillar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .info-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            background-color: white; /* Default background */
+            color: #003f5c; /* Default text color */
+        }
+        .tab-button.active {
+            background-color: #003f5c;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .subgroup-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .subgroup-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .service-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .service-tag:hover {
+            transform: scale(1.05);
+        }
+        .icon-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+        
+        /* Responsive adjustments for flow chart arrows */
+        @media (max-width: 767px) {
+            .flow-diagram-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .flow-diagram-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .horizontal-flow-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            .arrow-horizontal {
+                width: 2px;
+                min-height: 20px;
+                min-width: 2px;
+                margin: 10px 0;
+            }
+            .arrow-horizontal::after {
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 8px solid #58508d;
+                left: -4px;
+                top: auto;
+                bottom: 0;
+            }
+
+            .synergy-horizontal-connector {
+                width: 2px;
+                min-height: 50px;
+                min-width: 2px;
+                margin: 20px 0;
+            }
+            .synergy-horizontal-connector.left-arrow::before {
+                border-top: 8px solid #bc5090;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                top: auto;
+                bottom: 0;
+                left: -4px;
+                transform: rotate(180deg);
+            }
+            .synergy-horizontal-connector.right-arrow::after {
+                border-top: 8px solid #bc5090;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                right: auto;
+                top: 0;
+                left: -4px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-[#003f5c] to-[#58508d] text-white py-8 px-4 md:px-8">
+        <div class="container mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-center mb-2">ReHo Gruppe</h1>
+            <h2 class="text-xl md:text-2xl font-semibold text-center mb-6">Geschäftsstruktur & Synergistische Kraft</h2>
+            <p class="text-center max-w-3xl mx-auto">Eine umfassende Visualisierung, wie ReHo Holdings und die erweiterte ReHo Consulting zusammenarbeiten, um ein leistungsstarkes Geschäftsökosystem mit verbesserten Lead-Generierungs- und Konversionsfähigkeiten zu schaffen.</p>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button class="tab-button active px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="pillars">Zwei Säulen</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="consulting">Consulting Untergruppen</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="leadgen">Lead Generierung</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="funnels">Konversionstrichter</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="synergy">Synergie Motor</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="growth">Zukünftiges Wachstum</button>
+        </div>
+
+        <!-- Two Pillars Section -->
+        <div id="pillars" class="tab-content active">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Die Zwei Säulen der ReHo Gruppe</h2>
+            
+            <div class="flex flex-col md:flex-row gap-6 justify-center mb-12">
+                <!-- ReHo Holdings Pillar -->
+                <div class="pillar-card bg-white p-6 flex-1 max-w-xl border-t-8 border-[#003f5c]">
+                    <h3 class="text-xl font-bold mb-4 text-[#003f5c]">ReHo Holdings</h3>
+                    <div class="mb-4">
+                        <span class="inline-block bg-[#003f5c] text-white text-sm px-3 py-1 rounded-full mb-2">Investitionsarm</span>
+                    </div>
+                    <p class="mb-4 text-gray-700">Investiert in wachstumsstarke Unternehmen in verschiedenen Sektoren, mit besonderem Fokus auf den Gastronomie-Markt.</p>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Zielgruppe</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Unternehmer</li>
+                            <li>Startups (Seed- bis Series A/B-Phase)</li>
+                            <li>Etablierte Unternehmen, die strategische Partner benötigen</li>
+                            <li>Potenzielle Co-Investoren</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Einzigartiges Wertversprechen</h4>
+                        <p class="text-gray-700">Bietet "Smart Capital", indem nicht nur Finanzierung, sondern auch strategische Beratung und Zugang zu einem robusten Netzwerk, einschließlich Marketing-Einblicken von ReHo Consulting, angeboten wird.</p>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Investitionsfokus</h4>
+                        <div class="chart-container">
+                            <canvas id="holdingsFocusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ReHo Consulting Pillar -->
+                <div class="pillar-card bg-white p-6 flex-1 max-w-xl border-t-8 border-[#bc5090]">
+                    <h3 class="text-xl font-bold mb-4 text-[#bc5090]">ReHo Consulting</h3>
+                    <div class="mb-4">
+                        <span class="inline-block bg-[#bc5090] text-white text-sm px-3 py-1 rounded-full mb-2">Marketing Beratung</span>
+                    </div>
+                    <p class="mb-4 text-gray-700">Liefert spezialisierte Marketingberatungen mit einem doppelten Fokus auf Gastronomie-Marktexpertise und allgemeines digitales Marketing für alle Unternehmenstypen.</p>
+                    
+                    <!-- Consulting Subgroups -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h5 class="font-semibold text-[#ff6361] mb-2">Gastronomie-Marketing</h5>
+                            <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                                <li>Restaurant- & Café-Marketing</li>
+                                <li>Entwicklung von Lebensmittelmarken</li>
+                                <li>Gastgewerbe & Veranstaltungen</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h5 class="font-semibold text-[#ffa600] mb-2">Allgemeines Digitales Marketing</h5>
+                            <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                                <li>SEO & Content Marketing</li>
+                                <li>Soziale Medien & bezahlte Anzeigen</li>
+                                <li>Webseitenentwicklung</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Zielgruppe</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Gastronomiebetriebe (Restaurants, Cafés, Essenslieferungen)</li>
+                            <li>Diverse Unternehmen aus allen Branchen, die digitales Marketing benötigen</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Einzigartiges Wertversprechen</h4>
+                        <p class="text-gray-700">Kombiniert tiefgreifendes Branchenwissen für die Gastronomie mit vielseitiger digitaler Marketingkompetenz und passt Strategien an die spezifischen Bedürfnisse jedes Kunden an.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consulting Subgroups Section -->
+        <div id="consulting" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#bc5090]">ReHo Consulting Erweiterter Umfang</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-12">
+                <!-- Gastronomy Marketing Subgroup -->
+                <div class="subgroup-card bg-white p-6 flex-1 shadow-lg border-t-4 border-[#ff6361]">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-circle bg-[#ff6361] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#ff6361]">Marketing für Gastronomie</h3>
+                    </div>
+                    
+                    <p class="mb-6 text-gray-700">Geht auf einzigartige Marketingherausforderungen und -chancen in der Lebensmittel- und Getränkeindustrie ein.</p>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ff6361]">Dienstleistungen</h4>
+                    <div class="mb-6">
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Restaurant Marketing</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Café Branding</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Entwicklung von Lebensmittelmarken</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Hospitality Marketing</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Event-Promotion</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Kundenerlebnisdesign</span>
+                    </div>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ff6361]">Lead-Generierung</h4>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-6">
+                        <li>Content Marketing zu Gastronomie-Trends</li>
+                        <li>Branchenveranstaltungen und kulinarische Partnerschaften</li>
+                        <li>Gezielte digitale Anzeigen für Lebensmittelunternehmen</li>
+                        <li>Networking in der Gastgewerbebranche</li>
+                    </ul>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ff6361]">Kundenprofil</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Restaurants und Cafés</li>
+                            <li>Essenslieferdienste</li>
+                            <li>Catering-Unternehmen</li>
+                            <li>Lebensmittelhersteller</li>
+                            <li>Gastgewerbebetriebe</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- General Digital Marketing Subgroup -->
+                <div class="subgroup-card bg-white p-6 flex-1 shadow-lg border-t-4 border-[#ffa600]">
+                    <div class="flex items-center mb-4">
+                        <div class="icon-circle bg-[#ffa600] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#ffa600]">Allgemeines Digitales Marketing</h3>
+                    </div>
+                    
+                    <p class="mb-6 text-gray-700">Bietet umfassende digitale Marketinglösungen für Unternehmen aller Branchen.</p>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ffa600]">Dienstleistungen</h4>
+                    <div class="mb-6">
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">SEO</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Social Media Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Content Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Bezahlte Werbung (PPC)</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">E-Mail Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Webdesign & -entwicklung</span>
+                    </div>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ffa600]">Lead-Generierung</h4>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-6">
+                        <li>Breiter digitaler Marketing-Content (z.B. SEO Best Practices)</li>
+                        <li>Allgemeines Branchen-Networking</li>
+                        <li>Online-Werbung auf mehreren Plattformen</li>
+                        <li>Empfehlungen von Nicht-Gastronomie-Kunden</li>
+                    </ul>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ffa600]">Kundenprofil</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Kleine bis mittlere Unternehmen</li>
+                            <li>E-Commerce-Unternehmen</li>
+                            <li>Dienstleister</li>
+                            <li>B2B-Unternehmen</li>
+                            <li>Startups aus allen Sektoren</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-6 text-center text-[#bc5090]">Umsatzverteilung Consulting</h3>
+                <div class="chart-container">
+                    <canvas id="consultingRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lead Generation Ecosystem Section -->
+        <div id="leadgen" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Lead-Generierungs-Ökosystem</h2>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+                <div class="overflow-x-auto">
+                    <div class="min-w-[900px] p-4 flex flex-col items-center">
+                        <!-- Top Row: Lead Sources -->
+                        <div class="flex flex-wrap justify-center gap-4 mb-8">
+                            <div class="small-flow-node bg-blue-50 border border-[#003f5c]">
+                                <p class="font-semibold text-[#003f5c]">Direktansprache</p>
+                            </div>
+                            <div class="small-flow-node bg-blue-50 border border-[#003f5c]">
+                                <p class="font-semibold text-[#003f5c]">Investoren-Netzwerk</p>
+                            </div>
+                            <div class="small-flow-node bg-red-50 border border-[#ff6361]">
+                                <p class="font-semibold text-[#ff6361]">Gastronomie-Content</p>
+                            </div>
+                            <div class="small-flow-node bg-red-50 border border-[#ff6361]">
+                                <p class="font-semibold text-[#ff6361]">Kulinarische Events</p>
+                            </div>
+                            <div class="small-flow-node bg-yellow-50 border border-[#ffa600]">
+                                <p class="font-semibold text-[#ffa600]">Digitaler Marketing-Content</p>
+                            </div>
+                            <div class="small-flow-node bg-yellow-50 border border-[#ffa600]">
+                                <p class="font-semibold text-[#ffa600]">Branchen-Networking</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Vertical Arrows from Sources to Business Units -->
+                        <div class="flex justify-center w-full mb-8">
+                            <div class="flex gap-4 md:gap-16 lg:gap-24">
+                                <div class="arrow-vertical h-12"></div> <!-- For Holdings sources -->
+                                <div class="arrow-vertical h-12"></div> <!-- For Holdings sources -->
+                                <div class="arrow-vertical h-12"></div> <!-- For Gastronomy sources -->
+                                <div class="arrow-vertical h-12"></div> <!-- For Gastronomy sources -->
+                                <div class="arrow-vertical h-12"></div> <!-- For Digital Marketing sources -->
+                                <div class="arrow-vertical h-12"></div> <!-- For Digital Marketing sources -->
+                            </div>
+                        </div>
+                        
+                        <!-- Middle Row: Business Units -->
+                        <div class="flex flex-wrap justify-center items-center mb-8 w-full">
+                            <div class="flow-node border-t-4 border-[#003f5c] md:mr-4">
+                                <h3 class="font-bold text-lg text-[#003f5c] mb-2">ReHo Holdings</h3>
+                                <p class="text-sm text-gray-600">Investitionsarm</p>
+                            </div>
+                            <div class="arrow-horizontal hidden md:block"></div>
+                            <div class="flow-node border-t-4 border-[#ff6361] md:mx-4">
+                                <h3 class="font-bold text-lg text-[#ff6361] mb-2">Gastronomie Marketing</h3>
+                                <p class="text-sm text-gray-600">Consulting Untergruppe 1</p>
+                            </div>
+                            <div class="arrow-horizontal hidden md:block"></div>
+                            <div class="flow-node border-t-4 border-[#ffa600] md:ml-4">
+                                <h3 class="font-bold text-lg text-[#ffa600] mb-2">Allgemeines Digitales Marketing</h3>
+                                <p class="text-sm text-gray-600">Consulting Untergruppe 2</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Synergy Zone Arrow -->
+                        <div class="flex justify-center w-full mb-8">
+                            <div class="arrow-vertical h-12"></div>
+                        </div>
+
+                        <!-- Synergy Zone -->
+                        <div class="flex justify-center items-center mb-8 w-full">
+                            <div class="flow-node bg-gradient-to-r from-[#003f5c]/10 to-[#bc5090]/10 border border-dashed border-gray-400">
+                                <h3 class="font-bold text-[#58508d]">Synergie Zone</h3>
+                                <p class="text-sm text-gray-600">Lead- & Ressourcen-Teilung</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Arrow pointing to outcomes -->
+                        <div class="flex justify-center w-full mb-4">
+                            <div class="arrow-vertical h-12"></div>
+                        </div>
+                        
+                        <!-- Outcomes -->
+                        <div class="flex justify-center">
+                            <div class="flow-node bg-gradient-to-r from-[#003f5c] to-[#bc5090] text-white">
+                                <h3 class="font-bold text-lg mb-2">Verbesserte Ergebnisse</h3>
+                                <p class="text-sm">Höhere Konversionsraten & Geschäftswachstum</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#003f5c]">Holdings Lead-Quellen</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Direktansprache:</strong> An potenzielle Investitionsziele</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Investoren-Netzwerk:</strong> Co-Investoren-Empfehlungen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Online-Präsenz:</strong> Darstellung des Investmentportfolios</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Gastronomie-Consulting:</strong> Restaurantkunden-Empfehlungen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Digitales Marketing:</strong> Empfehlungen von wachstumsstarken Kunden</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#ff6361]">Gastronomie Marketing-Leads</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Content Marketing:</strong> Gastronomie-Trends & Einblicke</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Branchenveranstaltungen:</strong> Food Festivals & Konferenzen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Kulinarische Partnerschaften:</strong> Kooperationen mit Köchen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Holdings-Portfolio:</strong> Restaurant-Investitionen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Digitales Marketing:</strong> Cross-Service-Empfehlungen</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#ffa600]">Digital Marketing-Leads</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>SEO-Content:</strong> Best Practices im digitalen Marketing</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Online-Werbung:</strong> Gezielte Kampagnen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Geschäfts-Networking:</strong> Branchenübergreifende Veranstaltungen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Holdings-Netzwerk:</strong> Anforderungen der Portfoliounternehmen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Gastronomie-Kunden:</strong> Zusätzlicher Dienstleistungsbedarf</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Funnels Section -->
+        <div id="funnels" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Konversionstrichter</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Holdings Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#003f5c]">ReHo Holdings Trichter</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Erste Anfrage</h4>
+                            <p class="text-sm">Erster Kontakt mit potenziellem Investment</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Due Diligence</h4>
+                            <p class="text-sm">Geschäfts- & Finanzbewertung</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Pitch & Präsentation</h4>
+                            <p class="text-sm">Formelle Investitionsprüfung</p>
+                        </div>
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Term Sheet</h4>
+                            <p class="text-sm">Verhandlung der Investitionsbedingungen</p>
+                        </div>
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Investitionsabschluss</h4>
+                            <p class="text-sm">Finalisierung des Deals & Finanzierung</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#003f5c]">Konversionsraten</h4>
+                        <div class="chart-container">
+                            <canvas id="holdingsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gastronomy Marketing Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#ff6361]">Gastronomie Marketing Trichter</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Branchenengagement</h4>
+                            <p class="text-sm">Inhalte & Event-Teilnahme</p>
+                        </div>
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Entdeckungs-Meeting</h4>
+                            <p class="text-sm">Bedürfnisanalyse für Restaurant/Lebensmittelgeschäft</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Vorschlag & Strategie</h4>
+                            <p class="text-sm">Maßgeschneiderter Marketingplan präsentiert</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Vertragsunterzeichnung</h4>
+                            <p class="text-sm">Formelle Beauftragung der Dienstleistungen</p>
+                        </div>
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Kampagnenstart</h4>
+                            <p class="text-sm">Marketingausführung beginnt</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ff6361]">Konversionsraten</h4>
+                        <div class="chart-container">
+                            <canvas id="gastronomyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Digital Marketing Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#ffa600]">Allgemeines Digital Marketing Trichter</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Erster Kontakt</h4>
+                            <p class="text-sm">Webseitenbesuch, Anfrageformular, Anruf</p>
+                        </div>
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Beratungsgespräch</h4>
+                            <p class="text-sm">Verständnis des Geschäfts & der Ziele des Kunden</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Maßgeschneidertes Angebot</h4>
+                            <p class="text-sm">Detailliertes Dienstleistungsangebot & Preise</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Vereinbarung & Onboarding</h4>
+                            <p class="text-sm">Vertrag unterzeichnet, Projekt gestartet</p>
+                        </div>
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Strategieimplementierung</h4>
+                            <p class="text-sm">Digitale Marketingkampagnen beginnen</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ffa600]">Konversionsraten</h4>
+                        <div class="chart-container">
+                            <canvas id="digitalMarketingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synergy Engine Section -->
+        <div id="synergy" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#bc5090]">Der ReHo Gruppe Synergie-Motor</h2>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8 max-w-5xl mx-auto flex flex-col items-center">
+                <p class="text-center text-lg text-gray-700 mb-10">Die wahre Stärke der ReHo Gruppe liegt in der symbiotischen Beziehung zwischen ReHo Holdings und ReHo Consulting, die eine leistungsstarke Feedbackschleife für gegenseitiges Wachstum schafft.</p>
+                
+                <!-- Top Row: ReHo Holdings and ReHo Consulting -->
+                <div class="flex flex-col md:flex-row items-center justify-center w-full mb-8">
+                    <div class="info-card bg-[#003f5c] text-white p-6 flex-1 text-center w-full md:max-w-xs mb-4 md:mb-0">
+                        <h3 class="text-xl font-bold mb-3">ReHo Holdings</h3>
+                        <p class="text-sm mb-2"><strong>Rolle:</strong> Investition & Strategische Partnerschaft</p>
+                        <p class="text-sm">Identifiziert wachstumsstarke Unternehmen und bietet Kapital und strategische Aufsicht.</p>
+                    </div>
+                    
+                    <div class="md:hidden synergy-flow-connector"></div> <!-- Vertical arrow for small screens -->
+                    <div class="hidden md:block synergy-horizontal-connector right-arrow left-arrow max-w-[200px] mx-8"></div> <!-- Bidirectional horizontal arrow for desktop -->
+                    
+                    <div class="info-card bg-[#bc5090] text-white p-6 flex-1 text-center w-full md:max-w-xs mt-4 md:mt-0">
+                        <h3 class="text-xl font-bold mb-3">ReHo Consulting</h3>
+                        <p class="text-sm mb-2"><strong>Rolle:</strong> Marketing & Geschäftsentwicklung</p>
+                        <p class="text-sm">Bietet kompetente Marketingdienstleistungen, die das Kundenwachstum und die Lead-Generierung vorantreiben.</p>
+                    </div>
+                </div>
+
+                <!-- Connectors from Main Entities to Synergy Zone -->
+                <div class="flex justify-center w-full">
+                    <div class="synergy-flow-connector mr-16 md:mr-32"></div> <!-- From Holdings to Synergy Zone -->
+                    <div class="synergy-flow-connector ml-16 md:ml-32"></div> <!-- From Consulting to Synergy Zone -->
+                </div>
+                
+                <!-- Central Synergy Hub -->
+                <div class="flow-node bg-gradient-to-r from-[#003f5c]/10 to-[#bc5090]/10 border border-dashed border-gray-400 mb-8 max-w-sm">
+                    <h3 class="font-bold text-[#58508d]">Synergie Zone</h3>
+                    <p class="text-sm text-gray-600">Hub für Lead- & Ressourcen-Teilung</p>
+                </div>
+
+                <div class="synergy-flow-connector mb-8"></div> <!-- Arrow leading from Synergy Zone to Touchpoints -->
+
+                <!-- Key Synergy Touchpoints Row -->
+                <div class="flex flex-col md:flex-row items-start justify-center w-full gap-8 mb-8">
+                    <div class="touchpoint-card bg-purple-50 p-6 border-l-4 border-[#003f5c] flex-1 w-full md:max-w-md">
+                        <h4 class="font-semibold text-[#003f5c] mb-2">Holdings zu Consulting Fluss</h4>
+                        <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                            <li>Empfehlungen (Portfolio-Unternehmen-Bedürfnisse)</li>
+                            <li>Markteinblicke (Investitionstrends)</li>
+                            <li>Validierung (Erfolg des Portfolios)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="md:hidden synergy-flow-connector"></div> <!-- Vertical arrow for small screens -->
+                    <div class="hidden md:block synergy-horizontal-connector right-arrow left-arrow flex-grow max-w-[100px] mx-4"></div> <!-- Bidirectional horizontal arrow for desktop -->
+
+                    <div class="touchpoint-card bg-purple-50 p-6 border-l-4 border-[#bc5090] flex-1 w-full md:max-w-md">
+                        <h4 class="font-semibold text-[#bc5090] mb-2">Consulting zu Holdings Fluss</h4>
+                        <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                            <li>Lead-Generierung (Kunden mit hohem Potenzial)</li>
+                            <li>Due Diligence (Marketing-Performance-Daten)</li>
+                            <li>Verbesserung der Exit-Strategie</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="synergy-flow-connector mb-8"></div> <!-- Arrow leading to outcomes -->
+
+                <!-- Combined Synergistic Outcomes -->
+                <div class="info-card bg-gradient-to-r from-[#003f5c] to-[#bc5090] text-white p-6 text-center max-w-md mx-auto">
+                    <h3 class="text-xl font-bold mb-3">Kern Synergistische Ergebnisse</h3>
+                    <ul class="list-disc pl-5 text-left text-sm space-y-1">
+                        <li><strong>Verbesserter Deal-Flow:</strong> Consulting identifiziert investierbare Unternehmen.</li>
+                        <li><strong>Portfolio-Unterstützung:</strong> Consulting stärkt die Portfoliounternehmen von Holdings.</li>
+                        <li><strong>Marktvalidierung:</strong> Die Investitionen von Holdings validieren die Branchenexpertise von Consulting.</li>
+                        <li><strong>Cross-Referral:</strong> Beide Einheiten generieren Leads füreinander.</li>
+                        <li><strong>Daten & Einblicke:</strong> Geteilte Marktdaten informieren die Strategie beider.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Growth Section -->
+        <div id="growth" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#ffa600]">Zukünftiges Wachstum & Expansion</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <!-- Strategic Growth Areas -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-[#ffa600]">
+                    <h3 class="text-xl font-bold mb-4 text-[#ffa600]">Strategische Wachstumsbereiche</h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-3">
+                        <li><strong>Geografische Expansion:</strong> Zielmärkte in Südostasien und Europa für Investitionen und Beratung.</li>
+                        <li><strong>Vertikale Integration:</strong> Erwerb oder Entwicklung von Unternehmen, die bestehende Portfolios ergänzen (z.B. Food-Tech, Hospitality-Tech).</li>
+                        <li><strong>Dienstleistungsdiversifizierung:</strong> Einführung neuer Beratungsdienstleistungen (z.B. HR-Beratung für Startups, Finanzmodellierung für Kleinunternehmen).</li>
+                        <li><strong>KI & Automatisierung:</strong> Einsatz von KI für verbesserte Marktanalysen, Lead-Generierung und personalisierte Marketingkampagnen.</li>
+                        <li><strong>Nachhaltigkeitsfokus:</strong> Investitionen in und Förderung nachhaltiger Geschäftspraktiken im Gastronomiebereich und darüber hinaus.</li>
+                    </ul>
+                </div>
+
+                <!-- Innovation & Technology -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-[#ff6361]">
+                    <h3 class="text-xl font-bold mb-4 text-[#ff6361]">Innovation & Technologieintegration</h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-3">
+                        <li><strong>Proprietäre Datenanalyse:</strong> Entwicklung interner Tools zur Analyse von Markttrends und Vorhersage von Investitionsmöglichkeiten/Marketingerfolg.</li>
+                        <li><strong>CRM & Lead Nurturing Systeme:</strong> Fortschrittliche Systeme zur Verfolgung und Optimierung der Lead-Konversion über alle Geschäftsbereiche hinweg.</li>
+                        <li><strong>Automatisierte Marketingplattformen:</strong> Implementierung von Lösungen für effiziente Content-Distribution und Anzeigenverwaltung.</li>
+                        <li><strong>Virtuelle Beratungstools:</strong> Verbesserung der Remote-Zusammenarbeit und Servicebereitstellung für globale Kunden.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8 max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold text-center mb-6 text-[#003f5c]">Prognostizierte Wachstumssäulen (Nächste 3-5 Jahre)</h3>
+                <div class="chart-container">
+                    <canvas id="growthProjectionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-[#003f5c] text-white py-6 px-4 md:px-8 mt-12">
+        <div class="container mx-auto text-center text-sm">
+            <p>&copy; 2025 ReHo Gruppe. Alle Rechte vorbehalten. Erstellt von Bea Villanea</p>
+            <p class="mt-2">Kapital mit Kreativität verbinden, Wachstum durch strategisches Marketing vorantreiben.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Deactivate all buttons and content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Activate clicked button and corresponding content
+                    button.classList.add('active');
+                    const targetTab = document.getElementById(button.dataset.tab);
+                    if (targetTab) {
+                        targetTab.classList.add('active');
+                    }
+
+                    // Re-render charts on tab switch to ensure they are visible and sized correctly
+                    // This is a common workaround for Chart.js in hidden containers
+                    if (button.dataset.tab === 'pillars') {
+                        renderHoldingsFocusChart();
+                    } else if (button.dataset.tab === 'consulting') {
+                        renderConsultingRevenueChart();
+                    } else if (button.dataset.tab === 'funnels') {
+                        renderHoldingsChart();
+                        renderGastronomyChart();
+                        renderDigitalMarketingChart();
+                    } else if (button.dataset.tab === 'growth') {
+                        renderGrowthProjectionChart();
+                    }
+                });
+            });
+
+            // Initial chart rendering for the active tab
+            renderHoldingsFocusChart();
+        });
+
+        // Chart.js Data and Configuration
+
+        // Chart 1: ReHo Holdings Investment Focus (Pillars Tab)
+        let holdingsFocusChartInstance = null;
+        function renderHoldingsFocusChart() {
+            if (holdingsFocusChartInstance) {
+                holdingsFocusChartInstance.destroy();
+            }
+            const ctx = document.getElementById('holdingsFocusChart');
+            if (!ctx) return; // Exit if canvas not found
+
+            holdingsFocusChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Gastronomie', 'Tech & SaaS', 'Gesundheitswesen', 'Immobilien', 'Sonstiges'],
+                    datasets: [{
+                        label: 'Investitionsfokus',
+                        data: [40, 25, 15, 10, 10], // Example percentages
+                        backgroundColor: [
+                            '#003f5c', // Dark Blue
+                            '#58508d', // Purple
+                            '#bc5090', // Pink
+                            '#ff6361', // Red
+                            '#ffa600'  // Orange
+                        ],
+                        hoverOffset: 10,
+                        borderColor: '#f0f4f8',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        title: {
+                            display: false,
+                            text: 'ReHo Holdings Investitionsfokus'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            },
+                             bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 2: Consulting Revenue Distribution (Consulting Subgroups Tab)
+        let consultingRevenueChartInstance = null;
+        function renderConsultingRevenueChart() {
+            if (consultingRevenueChartInstance) {
+                consultingRevenueChartInstance.destroy();
+            }
+            const ctx = document.getElementById('consultingRevenueChart');
+            if (!ctx) return; // Exit if canvas not found
+
+            consultingRevenueChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gastronomie-Marketing', 'Allgemeines Digitales Marketing'],
+                    datasets: [{
+                        label: 'Umsatzverteilung',
+                        data: [60, 40], // Example percentages
+                        backgroundColor: [
+                            '#ff6361', // Red for Gastronomy
+                            '#ffa600'  // Orange for General Digital
+                        ],
+                        borderColor: '#f0f4f8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Umsatzanteil (%)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false,
+                            text: 'Umsatzverteilung Consulting'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y + '%';
+                                    return label;
+                                }
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 3: ReHo Holdings Funnel Conversion Rates (Funnels Tab)
+        let holdingsChartInstance = null;
+        function renderHoldingsChart() {
+            if (holdingsChartInstance) {
+                holdingsChartInstance.destroy();
+            }
+            const ctx = document.getElementById('holdingsChart');
+            if (!ctx) return;
+
+            holdingsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Anfrage zu Due Diligence', 'Due Diligence zu Pitch', 'Pitch zu Term Sheet', 'Term Sheet zu Abschluss'],
+                    datasets: [{
+                        label: 'Konversionsrate',
+                        data: [70, 50, 60, 85], // Example percentages
+                        backgroundColor: '#003f5c',
+                        borderColor: '#f0f4f8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Make it a horizontal bar chart
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Konversionsrate (%)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 4: Gastronomy Marketing Funnel Conversion Rates (Funnels Tab)
+        let gastronomyChartInstance = null;
+        function renderGastronomyChart() {
+            if (gastronomyChartInstance) {
+                gastronomyChartInstance.destroy();
+            }
+            const ctx = document.getElementById('gastronomyChart');
+            if (!ctx) return;
+
+            gastronomyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Engagement zu Entdeckung', 'Entdeckung zu Vorschlag', 'Vorschlag zu Vertrag', 'Vertrag zu Start'],
+                    datasets: [{
+                        label: 'Konversionsrate',
+                        data: [65, 55, 75, 90], // Example percentages
+                        backgroundColor: '#ff6361',
+                        borderColor: '#f0f4f8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Konversionsrate (%)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 5: General Digital Marketing Funnel Conversion Rates (Funnels Tab)
+        let digitalMarketingChartInstance = null;
+        function renderDigitalMarketingChart() {
+            if (digitalMarketingChartInstance) {
+                digitalMarketingChartInstance.destroy();
+            }
+            const ctx = document.getElementById('digitalMarketingChart');
+            if (!ctx) return;
+
+            digitalMarketingChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kontakt zu Beratung', 'Beratung zu Vorschlag', 'Vorschlag zu Vereinbarung', 'Vereinbarung zu Implementierung'],
+                    datasets: [{
+                        label: 'Konversionsrate',
+                        data: [75, 60, 70, 88], // Example percentages
+                        backgroundColor: '#ffa600',
+                        borderColor: '#f0f4f8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Konversionsrate (%)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 6: Growth Projection Chart (Future Growth Tab)
+        let growthProjectionChartInstance = null;
+        function renderGrowthProjectionChart() {
+            if (growthProjectionChartInstance) {
+                growthProjectionChartInstance.destroy();
+            }
+            const ctx = document.getElementById('growthProjectionChart');
+            if (!ctx) return;
+
+            growthProjectionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jahr 1', 'Jahr 2', 'Jahr 3', 'Jahr 4', 'Jahr 5'],
+                    datasets: [
+                        {
+                            label: 'ReHo Holdings (Investitionsvermögen)',
+                            // Start at 1 million, then gradually increase
+                            data: [1, 2.5, 5, 8, 12], // Values in millions of Pounds
+                            borderColor: '#003f5c',
+                            backgroundColor: 'rgba(0, 63, 92, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'ReHo Consulting (Umsatz)',
+                            // Start at a lower realistic value, then gradually increase
+                            data: [0.5, 1.2, 2.5, 4, 6], // Values in millions of Pounds
+                            borderColor: '#bc5090',
+                            backgroundColor: 'rgba(188, 80, 144, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Wert (in Millionen Pfund)',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    // Format to show one decimal place if needed, or no decimals if whole number
+                                    if (value % 1 === 0) {
+                                        return '£' + value + 'M';
+                                    } else {
+                                        return '£' + value.toFixed(1) + 'M';
+                                    }
+                                },
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Jahr',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        // Ensure tooltip also formats to one decimal if applicable
+                                        if (context.parsed.y % 1 === 0) {
+                                            label += '£' + context.parsed.y + 'M';
+                                        } else {
+                                            label += '£' + context.parsed.y.toFixed(1) + 'M';
+                                        }
+                                    }
+                                    return label;
+                                }
+                            },
+                            bodyFont: {
+                                family: 'Inter'
+                            },
+                            titleFont: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
