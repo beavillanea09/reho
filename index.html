@@ -1380,7 +1380,8 @@
                     datasets: [
                         {
                             label: 'ReHo Holdings (Investment Assets)',
-                            data: [100, 150, 220, 300, 400], // Example values in millions
+                            // Start at 1 million, then gradually increase
+                            data: [1, 2.5, 5, 8, 12], // Values in millions of Pounds
                             borderColor: '#003f5c',
                             backgroundColor: 'rgba(0, 63, 92, 0.2)',
                             fill: true,
@@ -1388,7 +1389,8 @@
                         },
                         {
                             label: 'ReHo Consulting (Revenue)',
-                            data: [50, 70, 100, 140, 190], // Example values in millions
+                            // Start at a lower realistic value, then gradually increase
+                            data: [0.5, 1.2, 2.5, 4, 6], // Values in millions of Pounds
                             borderColor: '#bc5090',
                             backgroundColor: 'rgba(188, 80, 144, 0.2)',
                             fill: true,
@@ -1404,7 +1406,7 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Value (in Millions)',
+                                text: 'Value (in Millions of Pounds)',
                                 font: {
                                     family: 'Inter',
                                     size: 14
@@ -1412,7 +1414,12 @@
                             },
                             ticks: {
                                 callback: function(value) {
-                                    return '$' + value + 'M';
+                                    // Format to show one decimal place if needed, or no decimals if whole number
+                                    if (value % 1 === 0) {
+                                        return '£' + value + 'M';
+                                    } else {
+                                        return '£' + value.toFixed(1) + 'M';
+                                    }
                                 },
                                 font: {
                                     family: 'Inter'
@@ -1455,7 +1462,12 @@
                                         label += ': ';
                                     }
                                     if (context.parsed.y !== null) {
-                                        label += '$' + context.parsed.y + 'M';
+                                        // Ensure tooltip also formats to one decimal if applicable
+                                        if (context.parsed.y % 1 === 0) {
+                                            label += '£' + context.parsed.y + 'M';
+                                        } else {
+                                            label += '£' + context.parsed.y.toFixed(1) + 'M';
+                                        }
                                     }
                                     return label;
                                 }
