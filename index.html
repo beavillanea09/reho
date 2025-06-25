@@ -1,0 +1,1171 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReHo Group: Business Structure Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .funnel-step {
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+            transition: transform 0.3s ease;
+        }
+        .funnel-step:hover {
+            transform: scale(1.03);
+        }
+        .flow-node {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 280px;
+            min-width: 200px; 
+            flex-shrink: 0;
+            margin: 8px;
+            transition: all 0.3s ease;
+        }
+        .flow-node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .small-flow-node {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            min-width: 120px;
+            flex-shrink: 0;
+            margin: 6px;
+            transition: all 0.3s ease;
+        }
+        .small-flow-node:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .arrow {
+            position: relative;
+            height: 2px;
+            background-color: #58508d;
+            min-width: 40px;
+            margin: 0 5px;
+            align-self: center;
+        }
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #58508d;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+        .vertical-arrow {
+            position: relative;
+            width: 2px;
+            background-color: #58508d;
+            min-height: 30px;
+            margin: 5px 0;
+        }
+        .vertical-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #58508d;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .pillar-card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .pillar-card:hover {
+            transform: translateY(-5px);
+        }
+        .info-card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #003f5c;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .subgroup-card {
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .subgroup-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .service-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .service-tag:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-[#003f5c] to-[#58508d] text-white py-8 px-4 md:px-8">
+        <div class="container mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-center mb-2">ReHo Group</h1>
+            <h2 class="text-xl md:text-2xl font-semibold text-center mb-6">Business Structure & Synergistic Power</h2>
+            <p class="text-center max-w-3xl mx-auto">A comprehensive visualization of how ReHo Holdings and the expanded ReHo Consulting work together to create a powerful business ecosystem with enhanced lead generation and conversion capabilities.</p>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button class="tab-button active px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="pillars">Two Pillars</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="consulting">Consulting Subgroups</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="leadgen">Lead Generation</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="funnels">Conversion Funnels</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="synergy">Synergy Engine</button>
+            <button class="tab-button px-4 py-2 rounded-lg font-medium border border-[#003f5c]" data-tab="growth">Future Growth</button>
+        </div>
+
+        <!-- Two Pillars Section -->
+        <div id="pillars" class="tab-content active">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">The Two Pillars of ReHo Group</h2>
+            
+            <div class="flex flex-col md:flex-row gap-6 justify-center mb-12">
+                <!-- ReHo Holdings Pillar -->
+                <div class="pillar-card bg-white p-6 flex-1 max-w-xl border-t-8 border-[#003f5c]">
+                    <h3 class="text-xl font-bold mb-4 text-[#003f5c]">ReHo Holdings</h3>
+                    <div class="mb-4">
+                        <span class="inline-block bg-[#003f5c] text-white text-sm px-3 py-1 rounded-full mb-2">Investment Arm</span>
+                    </div>
+                    <p class="mb-4 text-gray-700">Invests in high-growth businesses across various sectors, with a particular focus on the gastronomy market.</p>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Target Audience</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Entrepreneurs</li>
+                            <li>Startups (seed to Series A/B)</li>
+                            <li>Established businesses needing strategic partners</li>
+                            <li>Potential co-investors</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Unique Value Proposition</h4>
+                        <p class="text-gray-700">Provides "smart capital" by offering not just funding but also strategic guidance and access to a robust network, including marketing insights from ReHo Consulting.</p>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Investment Focus</h4>
+                        <div class="chart-container h-48">
+                            <canvas id="holdingsFocusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ReHo Consulting Pillar -->
+                <div class="pillar-card bg-white p-6 flex-1 max-w-xl border-t-8 border-[#bc5090]">
+                    <h3 class="text-xl font-bold mb-4 text-[#bc5090]">ReHo Consulting</h3>
+                    <div class="mb-4">
+                        <span class="inline-block bg-[#bc5090] text-white text-sm px-3 py-1 rounded-full mb-2">Marketing Consultancy</span>
+                    </div>
+                    <p class="mb-4 text-gray-700">Delivers specialized marketing consultations, with a dual focus on gastronomy market expertise and general digital marketing for all business types.</p>
+                    
+                    <!-- Consulting Subgroups -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h5 class="font-semibold text-[#ff6361] mb-2">Gastronomy Marketing</h5>
+                            <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                                <li>Restaurant & cafe marketing</li>
+                                <li>Food brand development</li>
+                                <li>Hospitality & events</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h5 class="font-semibold text-[#ffa600] mb-2">General Digital Marketing</h5>
+                            <ul class="list-disc pl-5 text-gray-700 text-sm space-y-1">
+                                <li>SEO & content marketing</li>
+                                <li>Social media & paid ads</li>
+                                <li>Website development</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-2">Target Audience</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Gastronomy businesses (restaurants, cafes, food delivery)</li>
+                            <li>Diverse businesses across all sectors needing digital marketing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Unique Value Proposition</h4>
+                        <p class="text-gray-700">Combines deep industry insight for gastronomy with versatile digital marketing prowess, tailoring strategies to each client's specific needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consulting Subgroups Section -->
+        <div id="consulting" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#bc5090]">ReHo Consulting Expanded Scope</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-12">
+                <!-- Gastronomy Marketing Subgroup -->
+                <div class="subgroup-card bg-white p-6 flex-1 shadow-lg border-t-4 border-[#ff6361]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#ff6361] text-white flex items-center justify-center mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#ff6361]">Marketing for Gastronomy</h3>
+                    </div>
+                    
+                    <p class="mb-6 text-gray-700">Addresses unique marketing challenges and opportunities within the food and beverage industry.</p>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ff6361]">Services</h4>
+                    <div class="mb-6">
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Restaurant Marketing</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Cafe Branding</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Food Brand Development</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Hospitality Marketing</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Events Promotion</span>
+                        <span class="service-tag bg-[#ff6361]/10 text-[#ff6361]">Customer Experience Design</span>
+                    </div>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ff6361]">Lead Generation</h4>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-6">
+                        <li>Content marketing on gastronomy trends</li>
+                        <li>Industry events and culinary partnerships</li>
+                        <li>Targeted digital ads for food businesses</li>
+                        <li>Hospitality industry networking</li>
+                    </ul>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ff6361]">Client Profile</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Restaurants and cafes</li>
+                            <li>Food delivery services</li>
+                            <li>Catering companies</li>
+                            <li>Food product manufacturers</li>
+                            <li>Hospitality venues</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- General Digital Marketing Subgroup -->
+                <div class="subgroup-card bg-white p-6 flex-1 shadow-lg border-t-4 border-[#ffa600]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#ffa600] text-white flex items-center justify-center mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#ffa600]">General Digital Marketing</h3>
+                    </div>
+                    
+                    <p class="mb-6 text-gray-700">Offers comprehensive digital marketing solutions for businesses across all industries.</p>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ffa600]">Services</h4>
+                    <div class="mb-6">
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">SEO</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Social Media Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Content Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Paid Advertising (PPC)</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Email Marketing</span>
+                        <span class="service-tag bg-[#ffa600]/10 text-[#ffa600]">Website Design & Development</span>
+                    </div>
+                    
+                    <h4 class="font-semibold mb-3 text-[#ffa600]">Lead Generation</h4>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-6">
+                        <li>Broad digital marketing content (e.g., SEO best practices)</li>
+                        <li>General industry networking</li>
+                        <li>Online advertising across multiple platforms</li>
+                        <li>Referrals from non-gastronomy clients</li>
+                    </ul>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ffa600]">Client Profile</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Small to medium businesses</li>
+                            <li>E-commerce companies</li>
+                            <li>Service providers</li>
+                            <li>B2B enterprises</li>
+                            <li>Startups across all sectors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+                <h3 class="text-xl font-bold mb-6 text-center text-[#bc5090]">Consulting Revenue Distribution</h3>
+                <div class="chart-container h-80">
+                    <canvas id="consultingRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lead Generation Ecosystem Section -->
+        <div id="leadgen" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Lead Generation Ecosystem</h2>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-8">
+                <div class="overflow-x-auto">
+                    <div class="min-w-[900px] p-4">
+                        <!-- Top Row: Lead Sources -->
+                        <div class="flex justify-center mb-8">
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <div class="small-flow-node bg-blue-50 border border-[#003f5c]">
+                                    <p class="font-semibold text-[#003f5c]">Direct Outreach</p>
+                                </div>
+                                <div class="small-flow-node bg-blue-50 border border-[#003f5c]">
+                                    <p class="font-semibold text-[#003f5c]">Investor Network</p>
+                                </div>
+                                <div class="small-flow-node bg-red-50 border border-[#ff6361]">
+                                    <p class="font-semibold text-[#ff6361]">Gastronomy Content</p>
+                                </div>
+                                <div class="small-flow-node bg-red-50 border border-[#ff6361]">
+                                    <p class="font-semibold text-[#ff6361]">Culinary Events</p>
+                                </div>
+                                <div class="small-flow-node bg-yellow-50 border border-[#ffa600]">
+                                    <p class="font-semibold text-[#ffa600]">Digital Marketing Content</p>
+                                </div>
+                                <div class="small-flow-node bg-yellow-50 border border-[#ffa600]">
+                                    <p class="font-semibold text-[#ffa600]">Industry Networking</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Vertical Arrows -->
+                        <div class="flex justify-center mb-8">
+                            <div class="flex gap-16 md:gap-24">
+                                <div class="vertical-arrow"></div>
+                                <div class="vertical-arrow"></div>
+                                <div class="vertical-arrow"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Middle Row: Business Units -->
+                        <div class="flex justify-center mb-8">
+                            <div class="flow-node border-t-4 border-[#003f5c] mr-4">
+                                <h3 class="font-bold text-lg text-[#003f5c] mb-2">ReHo Holdings</h3>
+                                <p class="text-sm text-gray-600">Investment Arm</p>
+                            </div>
+                            <div class="flow-node border-t-4 border-[#ff6361] mx-4">
+                                <h3 class="font-bold text-lg text-[#ff6361] mb-2">Gastronomy Marketing</h3>
+                                <p class="text-sm text-gray-600">Consulting Subgroup 1</p>
+                            </div>
+                            <div class="flow-node border-t-4 border-[#ffa600] ml-4">
+                                <h3 class="font-bold text-lg text-[#ffa600] mb-2">General Digital Marketing</h3>
+                                <p class="text-sm text-gray-600">Consulting Subgroup 2</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Synergy Arrows -->
+                        <div class="flex justify-center items-center mb-8">
+                            <div class="flow-node bg-gradient-to-r from-[#003f5c]/10 to-[#bc5090]/10 border border-dashed border-gray-400">
+                                <h3 class="font-bold text-[#58508d]">Synergy Zone</h3>
+                                <p class="text-sm text-gray-600">Lead & Resource Sharing</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Row: Arrows pointing to outcomes -->
+                        <div class="flex justify-center mb-4">
+                            <div class="vertical-arrow"></div>
+                        </div>
+                        
+                        <!-- Outcomes -->
+                        <div class="flex justify-center">
+                            <div class="flow-node bg-gradient-to-r from-[#003f5c] to-[#bc5090] text-white">
+                                <h3 class="font-bold text-lg mb-2">Enhanced Outcomes</h3>
+                                <p class="text-sm">Higher conversion rates & business growth</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#003f5c]">Holdings Lead Sources</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Direct Outreach:</strong> To potential investment targets</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Investor Network:</strong> Co-investor referrals</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Online Presence:</strong> Investment portfolio showcase</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Gastronomy Consulting:</strong> Restaurant client referrals</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Digital Marketing:</strong> High-growth client referrals</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#ff6361]">Gastronomy Marketing Leads</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Content Marketing:</strong> Gastronomy trends & insights</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Industry Events:</strong> Food festivals & conferences</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Culinary Partnerships:</strong> Chef collaborations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Holdings Portfolio:</strong> Restaurant investments</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Digital Marketing:</strong> Cross-service referrals</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#ffa600]">Digital Marketing Leads</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>SEO Content:</strong> Digital marketing best practices</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Online Advertising:</strong> Targeted campaigns</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ffa600] mr-3"></span>
+                            <span><strong>Business Networking:</strong> Cross-industry events</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#003f5c] mr-3"></span>
+                            <span><strong>Holdings Network:</strong> Portfolio company needs</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-3 h-3 rounded-full bg-[#ff6361] mr-3"></span>
+                            <span><strong>Gastronomy Clients:</strong> Additional service needs</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Funnels Section -->
+        <div id="funnels" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Conversion Funnels</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Holdings Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#003f5c]">ReHo Holdings Funnel</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Initial Inquiry</h4>
+                            <p class="text-sm">First contact with potential investment</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Due Diligence</h4>
+                            <p class="text-sm">Business & financial assessment</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Pitch & Presentation</h4>
+                            <p class="text-sm">Formal investment consideration</p>
+                        </div>
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Term Sheet</h4>
+                            <p class="text-sm">Investment terms negotiation</p>
+                        </div>
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Investment Closing</h4>
+                            <p class="text-sm">Deal finalization & funding</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#003f5c]">Conversion Rates</h4>
+                        <div class="chart-container">
+                            <canvas id="holdingsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gastronomy Marketing Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#ff6361]">Gastronomy Marketing Funnel</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Industry Engagement</h4>
+                            <p class="text-sm">Content & event participation</p>
+                        </div>
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Discovery Meeting</h4>
+                            <p class="text-sm">Restaurant/food business needs assessment</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Strategy Proposal</h4>
+                            <p class="text-sm">Customized marketing plan</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Service Agreement</h4>
+                            <p class="text-sm">Contract signing & onboarding</p>
+                        </div>
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Implementation</h4>
+                            <p class="text-sm">Marketing execution & optimization</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ff6361]">Conversion Rates</h4>
+                        <div class="chart-container">
+                            <canvas id="gastronomyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Digital Marketing Funnel -->
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-6 text-center text-[#ffa600]">Digital Marketing Funnel</h3>
+                    
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div class="funnel-step bg-[#ffa600] text-white p-4 text-center">
+                            <h4 class="font-bold">Lead Attraction</h4>
+                            <p class="text-sm">Content & advertising engagement</p>
+                        </div>
+                        <div class="funnel-step bg-[#ff6361] text-white p-4 text-center">
+                            <h4 class="font-bold">Consultation Call</h4>
+                            <p class="text-sm">Digital marketing needs assessment</p>
+                        </div>
+                        <div class="funnel-step bg-[#bc5090] text-white p-4 text-center">
+                            <h4 class="font-bold">Strategy Development</h4>
+                            <p class="text-sm">Custom digital marketing plan</p>
+                        </div>
+                        <div class="funnel-step bg-[#58508d] text-white p-4 text-center">
+                            <h4 class="font-bold">Proposal Acceptance</h4>
+                            <p class="text-sm">Service agreement & setup</p>
+                        </div>
+                        <div class="funnel-step bg-[#003f5c] text-white p-4 text-center">
+                            <h4 class="font-bold">Campaign Execution</h4>
+                            <p class="text-sm">Implementation & performance tracking</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-[#ffa600]">Conversion Rates</h4>
+                        <div class="chart-container">
+                            <canvas id="digitalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synergy Engine Section -->
+        <div id="synergy" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">The Synergy Engine</h2>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg mb-12">
+                <div class="overflow-x-auto">
+                    <div class="min-w-[900px] p-4">
+                        <!-- Top Row: Consulting Clients -->
+                        <div class="flex justify-center gap-16 mb-8">
+                            <div class="flow-node border-t-4 border-[#ff6361]">
+                                <h3 class="font-bold text-lg text-[#ff6361] mb-2">Gastronomy Clients</h3>
+                                <p class="text-sm text-gray-600">Restaurants, food businesses</p>
+                            </div>
+                            <div class="flow-node border-t-4 border-[#ffa600]">
+                                <h3 class="font-bold text-lg text-[#ffa600] mb-2">Digital Marketing Clients</h3>
+                                <p class="text-sm text-gray-600">Various business sectors</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Vertical Arrow -->
+                        <div class="flex justify-center gap-16 mb-8">
+                            <div class="vertical-arrow"></div>
+                            <div class="vertical-arrow"></div>
+                        </div>
+                        
+                        <!-- Middle Row: Qualification Process -->
+                        <div class="flex justify-center mb-8">
+                            <div class="flow-node bg-gradient-to-r from-[#bc5090]/20 to-[#003f5c]/20 border border-dashed border-gray-400">
+                                <h3 class="font-bold text-[#58508d]">Investment Opportunity Identification</h3>
+                                <p class="text-sm text-gray-600">Strategists assess business potential & growth</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Vertical Arrow -->
+                        <div class="flex justify-center mb-8">
+                            <div class="vertical-arrow"></div>
+                        </div>
+                        
+                        <!-- Bottom Row: ReHo Holdings -->
+                        <div class="flex justify-center">
+                            <div class="flow-node border-t-4 border-[#003f5c]">
+                                <h3 class="font-bold text-lg text-[#003f5c] mb-2">ReHo Holdings</h3>
+                                <p class="text-sm text-gray-600">Investment evaluation & funding</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#58508d]">Synergistic Lead Flow Process</h3>
+                    <ol class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="w-6 h-6 rounded-full bg-[#003f5c] text-white flex items-center justify-center text-xs mt-0.5 mr-3">1</span>
+                            <div>
+                                <strong class="text-[#003f5c]">Identification:</strong>
+                                <p class="text-gray-700">ReHo Consulting identifies investment opportunities within its expanded client base (both gastronomy and general digital marketing).</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-6 h-6 rounded-full bg-[#58508d] text-white flex items-center justify-center text-xs mt-0.5 mr-3">2</span>
+                            <div>
+                                <strong class="text-[#58508d]">Assessment:</strong>
+                                <p class="text-gray-700">Strategists perform an initial assessment of investment viability based on growth potential and market position.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-6 h-6 rounded-full bg-[#bc5090] text-white flex items-center justify-center text-xs mt-0.5 mr-3">3</span>
+                            <div>
+                                <strong class="text-[#bc5090]">Referral:</strong>
+                                <p class="text-gray-700">With client permission, ReHo Consulting makes a warm introduction to ReHo Holdings investment team.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-6 h-6 rounded-full bg-[#ff6361] text-white flex items-center justify-center text-xs mt-0.5 mr-3">4</span>
+                            <div>
+                                <strong class="text-[#ff6361]">Nurturing & Transition:</strong>
+                                <p class="text-gray-700">ReHo Holdings takes over, leveraging the initial trust built by ReHo Consulting to advance the investment conversation.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="w-6 h-6 rounded-full bg-[#ffa600] text-white flex items-center justify-center text-xs mt-0.5 mr-3">5</span>
+                            <div>
+                                <strong class="text-[#ffa600]">Success Story:</strong>
+                                <p class="text-gray-700">Successful investments become powerful case studies, demonstrating the ReHo Group's holistic value proposition.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4 text-[#58508d]">Synergy Benefits</h3>
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-2 text-[#003f5c]">For ReHo Holdings</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Pre-qualified investment opportunities</li>
+                            <li>Established trust through consulting relationship</li>
+                            <li>Deeper business insights from marketing data</li>
+                            <li>Expanded deal flow from diverse industries</li>
+                        </ul>
+                    </div>
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-2 text-[#bc5090]">For ReHo Consulting</h4>
+                        <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                            <li>Enhanced value proposition with investment potential</li>
+                            <li>Access to Holdings' portfolio for case studies</li>
+                            <li>Cross-selling opportunities between subgroups</li>
+                            <li>Ability to support clients through growth stages</li>
+                        </ul>
+                    </div>
+                    <div class="chart-container h-48">
+                        <canvas id="synergyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Future Growth Section -->
+        <div id="growth" class="tab-content">
+            <h2 class="text-2xl font-bold text-center mb-8 text-[#003f5c]">Future Growth Strategies</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="info-card bg-white p-6 border-l-4 border-[#003f5c]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#003f5c] text-white flex items-center justify-center text-xl font-bold mr-4">1</div>
+                        <h3 class="text-lg font-bold text-[#003f5c]">Sector Deepening</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4">Further specialization within existing subgroups to capture more market share and establish stronger industry expertise.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <h5 class="font-semibold text-[#ff6361] text-sm mb-2">Gastronomy Expansion</h5>
+                            <ul class="list-disc pl-4 text-gray-700 text-xs space-y-1">
+                                <li>Ghost kitchen consulting</li>
+                                <li>Food tech integration</li>
+                                <li>Sustainability practices</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <h5 class="font-semibold text-[#ffa600] text-sm mb-2">Digital Marketing Depth</h5>
+                            <ul class="list-disc pl-4 text-gray-700 text-xs space-y-1">
+                                <li>AI marketing automation</li>
+                                <li>Advanced analytics</li>
+                                <li>Conversion optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card bg-white p-6 border-l-4 border-[#bc5090]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#bc5090] text-white flex items-center justify-center text-xl font-bold mr-4">2</div>
+                        <h3 class="text-lg font-bold text-[#bc5090]">Geographic Expansion</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4">Targeting new regions or countries for both consulting and investment operations, leveraging the synergistic model in new markets.</p>
+                    <div class="chart-container h-48">
+                        <canvas id="geoExpansionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="info-card bg-white p-6 border-l-4 border-[#58508d]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#58508d] text-white flex items-center justify-center text-xl font-bold mr-4">3</div>
+                        <h3 class="text-lg font-bold text-[#58508d]">Complementary Services</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4">Adding new service offerings that enhance the existing business model and create additional synergy opportunities.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <h5 class="font-semibold text-[#003f5c] text-sm mb-2">Holdings Additions</h5>
+                            <ul class="list-disc pl-4 text-gray-700 text-xs space-y-1">
+                                <li>M&A advisory services</li>
+                                <li>Financial restructuring</li>
+                                <li>Growth capital consulting</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <h5 class="font-semibold text-[#bc5090] text-sm mb-2">Consulting Additions</h5>
+                            <ul class="list-disc pl-4 text-gray-700 text-xs space-y-1">
+                                <li>CRM implementation</li>
+                                <li>Advanced data analytics</li>
+                                <li>PR & reputation management</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card bg-white p-6 border-l-4 border-[#ffa600]">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-[#ffa600] text-white flex items-center justify-center text-xl font-bold mr-4">4</div>
+                        <h3 class="text-lg font-bold text-[#ffa600]">ReHo Incubator/Accelerator</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4">Launching a dedicated program that combines funding from Holdings with marketing expertise from Consulting to nurture early-stage businesses.</p>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                        <li>Structured mentorship program</li>
+                        <li>Seed funding opportunities</li>
+                        <li>Marketing strategy development</li>
+                        <li>Network access and business development</li>
+                        <li>Path to larger investment from Holdings</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-[#003f5c] to-[#58508d] text-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-center">Strategic Vision</h3>
+                <p class="text-center max-w-3xl mx-auto mb-6">By leveraging the expanded scope of ReHo Consulting and its synergistic relationship with ReHo Holdings, the group aims to create a comprehensive ecosystem that drives growth across all business units while providing exceptional value to clients and portfolio companies.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white/10 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">Key Success Factors</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Maintaining strong brand alignment across all entities</li>
+                            <li>Continuous refinement of lead sharing processes</li>
+                            <li>Cross-training teams on identifying opportunities</li>
+                            <li>Consistent quality across all services and subgroups</li>
+                            <li>Data integration between consulting and investment arms</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">5-Year Goals</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Establish ReHo as a recognized leader in both investment and marketing</li>
+                            <li>Expand to 3+ new geographic markets</li>
+                            <li>Launch the ReHo Incubator program</li>
+                            <li>Develop proprietary technology for lead qualification</li>
+                            <li>Create a diverse portfolio spanning multiple industries</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-6 px-4 mt-12">
+        <div class="container mx-auto text-center">
+            <p>© 2023 ReHo Group | Business Structure Infographic</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Deactivate all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Activate clicked button and show corresponding content
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Charts
+            // Holdings Focus Chart
+            const holdingsFocusCtx = document.getElementById('holdingsFocusChart').getContext('2d');
+            new Chart(holdingsFocusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Gastronomy', 'Tech', 'Retail', 'Services', 'Other'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            '#003f5c',
+                            '#58508d',
+                            '#bc5090',
+                            '#ff6361',
+                            '#ffa600'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Investment Focus by Sector'
+                        }
+                    }
+                }
+            });
+            
+            // Consulting Revenue Chart
+            const consultingRevenueCtx = document.getElementById('consultingRevenueChart').getContext('2d');
+            new Chart(consultingRevenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [
+                        {
+                            label: 'Gastronomy Marketing',
+                            data: [30, 35, 40, 45],
+                            backgroundColor: '#ff6361',
+                            borderWidth: 0
+                        },
+                        {
+                            label: 'General Digital Marketing',
+                            data: [25, 30, 40, 50],
+                            backgroundColor: '#ffa600',
+                            borderWidth: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Revenue (in $1,000s)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Quarterly Revenue by Consulting Subgroup'
+                        }
+                    }
+                }
+            });
+            
+            // Holdings Funnel Chart
+            const holdingsCtx = document.getElementById('holdingsChart').getContext('2d');
+            new Chart(holdingsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Initial Inquiry', 'Due Diligence', 'Pitch', 'Term Sheet', 'Closing'],
+                    datasets: [{
+                        label: 'Conversion Rate (%)',
+                        data: [100, 60, 40, 25, 15],
+                        backgroundColor: [
+                            '#003f5c',
+                            '#58508d',
+                            '#bc5090',
+                            '#ff6361',
+                            '#ffa600'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Gastronomy Marketing Funnel Chart
+            const gastronomyCtx = document.getElementById('gastronomyChart').getContext('2d');
+            new Chart(gastronomyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Engagement', 'Discovery', 'Strategy', 'Agreement', 'Implementation'],
+                    datasets: [{
+                        label: 'Conversion Rate (%)',
+                        data: [100, 55, 40, 30, 25],
+                        backgroundColor: [
+                            '#ff6361',
+                            '#ffa600',
+                            '#58508d',
+                            '#bc5090',
+                            '#003f5c'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Digital Marketing Funnel Chart
+            const digitalCtx = document.getElementById('digitalChart').getContext('2d');
+            new Chart(digitalCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Attraction', 'Consultation', 'Strategy', 'Proposal', 'Execution'],
+                    datasets: [{
+                        label: 'Conversion Rate (%)',
+                        data: [100, 60, 45, 35, 30],
+                        backgroundColor: [
+                            '#ffa600',
+                            '#ff6361',
+                            '#bc5090',
+                            '#58508d',
+                            '#003f5c'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Synergy Chart
+            const synergyCtx = document.getElementById('synergyChart').getContext('2d');
+            new Chart(synergyCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Gastronomy Client Referrals', 'Digital Marketing Client Referrals', 'Direct Sourcing'],
+                    datasets: [{
+                        data: [40, 35, 25],
+                        backgroundColor: [
+                            '#ff6361',
+                            '#ffa600',
+                            '#003f5c'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Holdings Investment Lead Sources'
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Geographic Expansion Chart
+            const geoExpansionCtx = document.getElementById('geoExpansionChart').getContext('2d');
+            new Chart(geoExpansionCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['North America', 'Europe', 'Asia', 'Middle East', 'Latin America'],
+                    datasets: [
+                        {
+                            label: 'Current Presence',
+                            data: [90, 70, 20, 10, 5],
+                            fill: true,
+                            backgroundColor: 'rgba(0, 63, 92, 0.2)',
+                            borderColor: '#003f5c',
+                            pointBackgroundColor: '#003f5c',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#003f5c'
+                        },
+                        {
+                            label: '5-Year Target',
+                            data: [100, 90, 70, 60, 50],
+                            fill: true,
+                            backgroundColor: 'rgba(188, 80, 144, 0.2)',
+                            borderColor: '#bc5090',
+                            pointBackgroundColor: '#bc5090',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#bc5090'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95543135108dfed9',t:'MTc1MDg1MTY0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
